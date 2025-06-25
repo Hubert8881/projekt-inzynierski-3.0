@@ -1,0 +1,11 @@
+{
+  "restaurant_id": 1,
+  "reservation_date": "2025-06-15",
+  "reservation_time": "19:00",
+  "party_size": 4,
+  "special_requests": "Blisko okna",
+  "customer_first_name": "Jan",
+  "customer_last_name": "Kowalski",
+  "customer_email": "jan.kowalski@example.com",
+  "customer_phone": "123456789"
+}

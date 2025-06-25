@@ -1,0 +1,1 @@
+{"version":3,"file":"cityModel.js","sourceRoot":"","sources":["../../src/models/cityModel.ts"],"names":[],"mappings":";;;AAAA,iDAA0C;AAC1C,MAAa,SAAS;IACpB,MAAM,CAAC,KAAK,CAAC,MAAM;QACjB,MAAM,GAAG,GAAG,MAAM,eAAI,CAAC,KAAK,CAAC,2CAA2C,CAAC,CAAC;QAC1E,OAAO,GAAG,CAAC,IAAI,CAAC;IAClB,CAAC;CACF;AALD,8BAKC"}
