@@ -42,7 +42,7 @@ const dbConfig = {
     port: parseInt(process.env.DB_PORT || '5432'),
     database: process.env.DB_NAME || 'restaurant_db',
     user: process.env.DB_USER || 'postgres',
-    password: '7777',
+    password: process.env.DB_PASSWORD || '7777',
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
@@ -74,11 +74,19 @@ const initDatabase = async () => {
         opening_hours JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        city_id INTEGER REFERENCES cities(id) ON DELETE SET NULL
+        city_id INTEGER REFERENCES cities(id) ON DELETE SET NULL,
+        latitude DOUBLE PRECISION,
+        longitude DOUBLE PRECISION
       );
     `);
-        await exports.pool.query(`ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;`);
-        await exports.pool.query(`ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;`);
+        await exports.pool.query(`
+      CREATE TABLE IF NOT EXISTS menu_items (
+        id SERIAL PRIMARY KEY,
+        restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
+        name VARCHAR(255) NOT NULL,
+        price DECIMAL(10, 2) NOT NULL
+      );
+    `);
         await exports.pool.query(`
       CREATE TABLE IF NOT EXISTS tables (
         id SERIAL PRIMARY KEY,
@@ -109,6 +117,10 @@ const initDatabase = async () => {
         customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
         restaurant_id INTEGER REFERENCES restaurants(id) ON DELETE CASCADE,
         table_id INTEGER REFERENCES tables(id) ON DELETE CASCADE,
+        guest_first_name VARCHAR(100),
+        guest_last_name VARCHAR(100),
+        guest_email VARCHAR(255),
+        guest_phone VARCHAR(20),
         reservation_date DATE NOT NULL,
         reservation_time TIME NOT NULL,
         party_size INTEGER NOT NULL,
@@ -144,6 +156,11 @@ const initDatabase = async () => {
         ('Chleb i Wino', 'Restauracja i winiarnia z klimatem.', 'ul. Rynek Staromiejski 22, 87-100 Toruń', '+48 56 477 60 10', 'rezerwacje@chlebiwino.pl', '{"mon-sun": "12:00-22:00"}', (SELECT id FROM cities WHERE name='Toruń')),
         ('Jan Olbracht', 'Browar restauracyjny z własnym piwem.', 'ul. Szczytna 15, 87-100 Toruń', '+48 56 622 40 99', 'kontakt@olbracht.pl', '{"mon-sun": "12:00-23:00"}', (SELECT id FROM cities WHERE name='Toruń')),
         ('Manekin', 'Naleśnikarnia z bogatym menu.', 'ul. Rynek Staromiejski 16, 87-100 Toruń', '+48 56 623 45 12', 'biuro@manekin.pl', '{"mon-sun": "10:00-22:00"}', (SELECT id FROM cities WHERE name='Toruń'))
+      ON CONFLICT DO NOTHING;
+    `);
+        await exports.pool.query(`
+      INSERT INTO menu_items (restaurant_id, name, price)
+      SELECT id, 'Specjał Szefa Kuchni', 49.00 FROM restaurants
       ON CONFLICT DO NOTHING;
     `);
         console.log('Database tables initialized successfully');

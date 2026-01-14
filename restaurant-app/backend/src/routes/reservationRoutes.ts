@@ -3,10 +3,8 @@ import { ReservationController } from '../controllers/reservationController';
 
 const router = Router();
 
-router.get('/available-tables', ReservationController.getAvailableTables);
+router.get('/', ReservationController.getAllReservations);
 router.post('/', ReservationController.createReservation);
-router.get('/by-date', ReservationController.getReservationsByDate);  // przeniesione wyżej
-router.get('/:id', ReservationController.getReservation);
-router.put('/:id/status', ReservationController.updateReservationStatus);
+router.delete('/:id', ReservationController.deleteReservation);
 
 export default router;

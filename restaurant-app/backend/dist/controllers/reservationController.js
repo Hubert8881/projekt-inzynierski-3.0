@@ -1,259 +1,100 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReservationController = void 0;
-const reservationModel_1 = require("../models/reservationModel");
+const database_1 = require("../config/database");
 class ReservationController {
-    static async getAvailableTables(req, res) {
-        try {
-            const { restaurant_id, date, time, party_size } = req.query;
-            if (!restaurant_id || !date || !time || !party_size) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Missing required parameters: restaurant_id, date, time, party_size'
-                });
-                return;
-            }
-            const restaurantId = parseInt(restaurant_id);
-            const partySize = parseInt(party_size);
-            if (isNaN(restaurantId) || isNaN(partySize)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'restaurant_id and party_size must be valid numbers'
-                });
-                return;
-            }
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            if (!dateRegex.test(date)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Date must be in YYYY-MM-DD format'
-                });
-                return;
-            }
-            const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-            if (!timeRegex.test(time)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Time must be in HH:MM format'
-                });
-                return;
-            }
-            const availableTables = await reservationModel_1.ReservationModel.getAvailableTables(restaurantId, date, time, partySize);
-            res.json({
-                success: true,
-                data: {
-                    available_tables: availableTables,
-                    restaurant_id: restaurantId,
-                    requested_date: date,
-                    requested_time: time,
-                    party_size: partySize
-                }
-            });
-        }
-        catch (error) {
-            console.error('Error in getAvailableTables:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Internal server error'
-            });
-        }
-    }
     static async createReservation(req, res) {
-        try {
-            const reservationData = req.body;
-            const requiredFields = [
-                'customer_email',
-                'customer_first_name',
-                'customer_last_name',
-                'restaurant_id',
-                'reservation_date',
-                'reservation_time',
-                'party_size'
-            ];
-            const missingFields = requiredFields.filter(field => !reservationData[field]);
-            if (missingFields.length > 0) {
-                res.status(400).json({
-                    success: false,
-                    message: `Missing required fields: ${missingFields.join(', ')}`
-                });
-                return;
-            }
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(reservationData.customer_email)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Invalid email format'
-                });
-                return;
-            }
-            if (reservationData.party_size < 1 || reservationData.party_size > 20) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Party size must be between 1 and 20'
-                });
-                return;
-            }
-            const reservationDate = new Date(reservationData.reservation_date);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            if (reservationDate < today) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Reservation date cannot be in the past'
-                });
-                return;
-            }
-            const reservation = await reservationModel_1.ReservationModel.createReservation(reservationData);
-            res.status(201).json({
-                success: true,
-                message: 'Reservation created successfully',
-                data: reservation
-            });
+        const { restaurant_id, reservation_date, reservation_time, party_size, customer_first_name, customer_last_name, customer_email, customer_phone } = req.body;
+        if (!restaurant_id || !reservation_date || !customer_email) {
+            res.status(400).json({ success: false, message: 'Brak wymaganych danych rezerwacji.' });
+            return;
         }
-        catch (error) {
-            console.error('Error in createReservation:', error);
-            if (error instanceof Error) {
-                if (error.message.includes('No available tables')) {
-                    res.status(409).json({
-                        success: false,
-                        message: 'No available tables for the requested time and party size'
-                    });
-                }
-                else {
-                    res.status(500).json({
-                        success: false,
-                        message: 'Failed to create reservation'
-                    });
-                }
+        const client = await database_1.pool.connect();
+        try {
+            await client.query('BEGIN');
+            const restaurantRes = await client.query('SELECT total_tables FROM public.restaurants WHERE id = $1', [restaurant_id]);
+            const totalTables = restaurantRes.rows[0]?.total_tables || 10;
+            const currentRes = await client.query('SELECT COUNT(*) FROM public.reservations WHERE restaurant_id = $1 AND reservation_date = $2 AND reservation_time = $3', [restaurant_id, reservation_date, reservation_time]);
+            const bookedTables = parseInt(currentRes.rows[0].count);
+            if (bookedTables >= totalTables) {
+                await client.query('ROLLBACK');
+                res.status(400).json({ success: false, message: 'Brak wolnych stolikow na te godzine.' });
+                return;
+            }
+            let customerResult = await client.query('SELECT id FROM public.customers WHERE email = $1', [customer_email]);
+            let customerId;
+            if (customerResult.rows.length === 0) {
+                const newCustomer = await client.query('INSERT INTO public.customers (first_name, last_name, email, phone) VALUES ($1, $2, $3, $4) RETURNING id', [customer_first_name, customer_last_name, customer_email, customer_phone]);
+                customerId = newCustomer.rows[0].id;
             }
             else {
-                res.status(500).json({
-                    success: false,
-                    message: 'Internal server error'
-                });
+                customerId = customerResult.rows[0].id;
             }
-        }
-    }
-    static async getReservation(req, res) {
-        try {
-            const { id } = req.params;
-            const reservationId = parseInt(id);
-            if (isNaN(reservationId)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Invalid reservation ID'
-                });
-                return;
-            }
-            const reservation = await reservationModel_1.ReservationModel.getReservationById(reservationId);
-            if (!reservation) {
-                res.status(404).json({
-                    success: false,
-                    message: 'Reservation not found'
-                });
-                return;
-            }
-            res.json({
+            const reservationQuery = `
+        INSERT INTO public.reservations (
+          customer_id, 
+          restaurant_id, 
+          reservation_date, 
+          reservation_time, 
+          party_size, 
+          status
+        ) VALUES ($1, $2, $3, $4, $5, 'confirmed')
+        RETURNING id;
+      `;
+            const reservationValues = [customerId, restaurant_id, reservation_date, reservation_time, party_size];
+            const result = await client.query(reservationQuery, reservationValues);
+            await client.query('COMMIT');
+            res.status(201).json({
                 success: true,
-                data: reservation
+                message: 'Rezerwacja zostala pomyslnie zapisana!',
+                reservationId: result.rows[0].id
             });
         }
         catch (error) {
-            console.error('Error in getReservation:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Internal server error'
-            });
+            await client.query('ROLLBACK');
+            if (error.code === '23505') {
+                res.status(400).json({ success: false, message: 'Masz juz rezerwacje w tej restauracji o tej godzinie.' });
+            }
+            else {
+                res.status(500).json({ success: false, message: 'Blad serwera', error: error.message });
+            }
         }
-    }
-    static async updateReservationStatus(req, res) {
-        try {
-            const { id } = req.params;
-            const { status } = req.body;
-            const reservationId = parseInt(id);
-            if (isNaN(reservationId)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Invalid reservation ID'
-                });
-                return;
-            }
-            const validStatuses = ['pending', 'confirmed', 'cancelled', 'completed'];
-            if (!status || typeof status !== 'string' || !validStatuses.includes(status)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Invalid status. Must be one of: ' + validStatuses.join(', ')
-                });
-                return;
-            }
-            const updatedReservation = await reservationModel_1.ReservationModel.updateReservationStatus(reservationId, status);
-            if (!updatedReservation) {
-                res.status(404).json({
-                    success: false,
-                    message: 'Reservation not found'
-                });
-                return;
-            }
-            res.json({
-                success: true,
-                message: 'Reservation status updated successfully',
-                data: updatedReservation
-            });
-        }
-        catch (error) {
-            console.error('Error in updateReservationStatus:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Internal server error'
-            });
-        }
-    }
-    static async getReservationsByDate(req, res) {
-        try {
-            const { restaurant_id, date } = req.query;
-            if (!restaurant_id || !date) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Missing required parameters: restaurant_id, date'
-                });
-                return;
-            }
-            const restaurantId = parseInt(restaurant_id);
-            if (isNaN(restaurantId)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'restaurant_id must be a valid number'
-                });
-                return;
-            }
-            const reservations = await reservationModel_1.ReservationModel.getReservationsByDate(restaurantId, date);
-            res.json({
-                success: true,
-                data: reservations
-            });
-        }
-        catch (error) {
-            console.error('Error in getReservationsByDate:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Internal server error'
-            });
+        finally {
+            client.release();
         }
     }
     static async getAllReservations(req, res) {
         try {
-            const reservations = await reservationModel_1.ReservationModel.getAllReservations();
-            res.json({
-                success: true,
-                data: reservations
-            });
+            const query = `
+        SELECT 
+          r.id, 
+          c.first_name, c.last_name, c.email, c.phone,
+          res.name as restaurant_name,
+          r.reservation_date, r.reservation_time, r.party_size
+        FROM public.reservations r
+        JOIN public.customers c ON r.customer_id = c.id
+        JOIN public.restaurants res ON r.restaurant_id = res.id
+        ORDER BY r.reservation_date ASC, r.reservation_time ASC;
+      `;
+            const result = await database_1.pool.query(query);
+            res.json({ success: true, data: result.rows });
         }
         catch (error) {
-            console.error('Error in getAllReservations:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Internal server error'
-            });
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
+    static async deleteReservation(req, res) {
+        const { id } = req.params;
+        try {
+            const result = await database_1.pool.query('DELETE FROM public.reservations WHERE id = $1', [id]);
+            if (result.rowCount === 0) {
+                res.status(404).json({ success: false, message: 'Nie znaleziono rezerwacji.' });
+                return;
+            }
+            res.json({ success: true, message: 'Rezerwacja usunieta.' });
+        }
+        catch (error) {
+            res.status(500).json({ success: false, message: error.message });
         }
     }
 }
