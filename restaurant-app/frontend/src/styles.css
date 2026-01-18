@@ -359,3 +359,88 @@ form input:focus {
   transform: translate(-1px, -1px);
   box-shadow: 3px 3px 0px #000;
 }
+.city-grid-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px 0;
+}
+
+.city-card-new {
+  position: relative;
+  height: 220px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 3px solid #000;
+  cursor: pointer;
+  box-shadow: 8px 8px 0px #000;
+  transition: all 0.3s ease;
+}
+
+.city-card-new:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 12px 12px 0px #000;
+}
+
+.city-card-new img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.city-card-new:hover img {
+  transform: scale(1.1);
+}
+
+.city-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+}
+
+.city-card-overlay h2 {
+  color: white;
+  margin: 0;
+  font-size: 2rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  border-left: none !important; 
+  padding-left: 0 !important;
+  background: none !important;
+}
+
+.city-selection, .restaurant-selection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .city-grid-main {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+}
+.city-card-fallback-bg {
+  width: 100%;
+  height: 100%;
+  background-color: var(--secondary); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #ffffff;
+}
+
+.city-card-hover:hover {
+  transform: translateY(-12px) scale(1.02);
+}

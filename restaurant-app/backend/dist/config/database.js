@@ -37,6 +37,7 @@ exports.initDatabase = exports.pool = void 0;
 const pg_1 = require("pg");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
+pg_1.types.setTypeParser(1082, (val) => val);
 const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432'),
@@ -156,11 +157,6 @@ const initDatabase = async () => {
         ('Chleb i Wino', 'Restauracja i winiarnia z klimatem.', 'ul. Rynek Staromiejski 22, 87-100 Toruń', '+48 56 477 60 10', 'rezerwacje@chlebiwino.pl', '{"mon-sun": "12:00-22:00"}', (SELECT id FROM cities WHERE name='Toruń')),
         ('Jan Olbracht', 'Browar restauracyjny z własnym piwem.', 'ul. Szczytna 15, 87-100 Toruń', '+48 56 622 40 99', 'kontakt@olbracht.pl', '{"mon-sun": "12:00-23:00"}', (SELECT id FROM cities WHERE name='Toruń')),
         ('Manekin', 'Naleśnikarnia z bogatym menu.', 'ul. Rynek Staromiejski 16, 87-100 Toruń', '+48 56 623 45 12', 'biuro@manekin.pl', '{"mon-sun": "10:00-22:00"}', (SELECT id FROM cities WHERE name='Toruń'))
-      ON CONFLICT DO NOTHING;
-    `);
-        await exports.pool.query(`
-      INSERT INTO menu_items (restaurant_id, name, price)
-      SELECT id, 'Specjał Szefa Kuchni', 49.00 FROM restaurants
       ON CONFLICT DO NOTHING;
     `);
         console.log('Database tables initialized successfully');

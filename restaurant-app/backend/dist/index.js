@@ -9,6 +9,7 @@ const database_1 = require("./config/database");
 const restaurantRoutes_1 = __importDefault(require("./routes/restaurantRoutes"));
 const cityRoutes_1 = __importDefault(require("./routes/cityRoutes"));
 const reservationRoutes_1 = __importDefault(require("./routes/reservationRoutes"));
+const menuRoutes_1 = __importDefault(require("./routes/menuRoutes"));
 const app = (0, express_1.default)();
 const PORT = 5001;
 app.use((0, cors_1.default)({
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
 app.use('/api/restaurants', restaurantRoutes_1.default);
 app.use('/api/cities', cityRoutes_1.default);
 app.use('/api/reservations', reservationRoutes_1.default);
+app.use('/api/menu', menuRoutes_1.default);
 app.get('/api/health', (req, res) => {
     res.json({ success: true, message: 'API is running' });
 });

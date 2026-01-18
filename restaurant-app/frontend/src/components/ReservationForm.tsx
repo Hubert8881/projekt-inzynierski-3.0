@@ -3,182 +3,177 @@ import React, { useState } from 'react';
 interface ReservationFormProps {
   preselectedRestaurant: any;
   onSuccess: () => void;
+  cityVisual: { bg: string, neon: string };
 }
 
-const today = new Date();
-const yyyy = today.getFullYear();
-const mm = String(today.getMonth() + 1).padStart(2, '0');
-const dd = String(today.getDate()).padStart(2, '0');
-const minDate = `${yyyy}-${mm}-${dd}`;
-const maxDate = `${yyyy + 1}-12-31`;
+const ReservationForm: React.FC<ReservationFormProps> = ({ preselectedRestaurant, onSuccess, cityVisual }) => {
+  const [formData, setFormData] = useState({
+    customer_first_name: '',
+    customer_last_name: '',
+    customer_email: '',
+    customer_phone: '',
+    reservation_date: new Date().toISOString().split('T')[0],
+    reservation_time: '18:00',
+    party_size: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-function ReservationForm({ preselectedRestaurant, onSuccess }: ReservationFormProps) {
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [partySize, setPartySize] = useState(1);
-  const [name, setName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [message, setMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const cityColor = cityVisual.bg.split(',')[1]?.trim().split(' ')[0] || '#ff7b00';
+  const today = new Date().toISOString().split('T')[0];
+
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hour = 12; hour <= 22; hour++) {
+      times.push(`${hour}:00`);
+      times.push(`${hour}:30`);
+    }
+    return times;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage('');
-    setIsSubmitting(true);
+    setLoading(true);
+    setMessage(null);
 
-    if (!/^\d{9}$/.test(phone)) {
-      setMessage('Numer telefonu musi zawierać dokładnie 9 cyfr.');
-      setIsSubmitting(false);
-      return;
-    }
-
-    const reservation = {
+    const payload = {
       restaurant_id: preselectedRestaurant.id,
-      reservation_date: date,
-      reservation_time: time,
-      party_size: partySize,
-      customer_first_name: name,
-      customer_last_name: lastName,
-      customer_phone: '+48' + phone,
-      customer_email: email,
+      ...formData,
+      party_size: parseInt(formData.party_size) || 1
     };
 
     try {
-      const res = await fetch('http://localhost:5001/api/reservations', {
+      const response = await fetch('http://localhost:5001/api/reservations', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reservation),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const result = await response.json();
 
-      if (data.success) {
-        setMessage('Rezerwacja zakończona sukcesem!');
-        setTimeout(() => {
-          onSuccess();
-        }, 2000);
+      if (result.success) {
+        setMessage({ type: 'success', text: result.message });
+        setTimeout(() => onSuccess(), 2000);
       } else {
-        setMessage(data.message || 'Wystąpił błąd podczas rezerwacji.');
+        setMessage({ type: 'error', text: result.message || 'Wystąpił błąd.' });
       }
     } catch (error) {
-      setMessage('Błąd połączenia z serwerem.');
+      setMessage({ type: 'error', text: 'Błąd połączenia z serwerem.' });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
+  const inputStyle = {
+    width: '100%',
+    padding: '14px 18px',
+    borderRadius: '14px',
+    border: '1px solid #e2e8f0',
+    fontSize: '0.95rem',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    outline: 'none',
+    background: '#f8fafc',
+    boxSizing: 'border-box' as const,
+    transition: 'all 0.2s'
+  };
+
+  const labelStyle = {
+    fontSize: '0.85rem',
+    fontWeight: '700',
+    color: '#64748b',
+    marginBottom: '6px',
+    display: 'block'
+  };
+
   return (
-    <div className="reservation-form-container">
-      <div className="reservation-header">
-        <h2>Zarezerwuj stolik</h2>
-        <p>Restauracja: <strong>{preselectedRestaurant.name}</strong></p>
-      </div>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <header style={{ marginBottom: '25px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: '900', color: '#1a1a1a', margin: 0 }}>Rezerwacja</h2>
+        <p style={{ color: cityColor, fontWeight: '700', margin: 0 }}>{preselectedRestaurant.name}</p>
+      </header>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Data:</label>
-          <input
-            type="date"
-            value={date}
-            min={minDate}
-            max={maxDate}
-            onChange={(e) => setDate(e.target.value)}
-            onClick={(e) => (e.target as any).showPicker?.()}
-            onFocus={(e) => (e.target as any).showPicker?.()}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Godzina:</label>
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            onClick={(e) => (e.target as any).showPicker?.()}
-            onFocus={(e) => (e.target as any).showPicker?.()}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Liczba osób:</label>
-          <input
-            type="number"
-            value={partySize}
-            min={1}
-            max={20}
-            onChange={(e) => setPartySize(Number(e.target.value))}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Imię:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Wpisz imię"
-            required
-          />
-        </div>
-
-        <div>
-          <label>Nazwisko:</label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="Wpisz nazwisko"
-            required
-          />
-        </div>
-
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="twoj@email.com"
-            required
-          />
-        </div>
-
-        <div>
-          <label>Telefon:</label>
-          <div className="phone-input-container">
-            <span className="phone-prefix">+48</span>
-            <input
-              type="tel"
-              value={phone}
-              placeholder="123456789"
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, '');
-                if (value.length <= 9) setPhone(value);
-              }}
-              required
-            />
+      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '15px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+          <div>
+            <label style={labelStyle}>Imię</label>
+            <input type="text" required style={inputStyle} value={formData.customer_first_name} onChange={(e) => setFormData({ ...formData, customer_first_name: e.target.value })} />
+          </div>
+          <div>
+            <label style={labelStyle}>Nazwisko</label>
+            <input type="text" required style={inputStyle} value={formData.customer_last_name} onChange={(e) => setFormData({ ...formData, customer_last_name: e.target.value })} />
           </div>
         </div>
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Wysyłanie...' : 'Potwierdź rezerwację'}
-        </button>
+        <div>
+          <label style={labelStyle}>Adres Email</label>
+          <input type="email" required placeholder="jan@kowalski.pl" style={inputStyle} value={formData.customer_email} onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })} />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+          <div>
+            <label style={labelStyle}>Data</label>
+            <input type="date" required min={today} style={inputStyle} value={formData.reservation_date} onChange={(e) => setFormData({ ...formData, reservation_date: e.target.value })} />
+          </div>
+          <div>
+            <label style={labelStyle}>Godzina</label>
+            <select style={inputStyle} value={formData.reservation_time} onChange={(e) => setFormData({ ...formData, reservation_time: e.target.value })}>
+              {generateTimeOptions().map(time => <option key={time} value={time}>{time}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '15px' }}>
+          <div>
+            <label style={labelStyle}>Liczba gości</label>
+            <input type="number" required min="1" max="20" placeholder="0" style={inputStyle} value={formData.party_size} onChange={(e) => setFormData({ ...formData, party_size: e.target.value })} />
+          </div>
+          <div>
+            <label style={labelStyle}>Numer telefonu</label>
+            <div style={{ display: 'flex', position: 'relative', alignItems: 'center' }}>
+              <span style={{ position: 'absolute', left: '15px', fontWeight: '700', color: '#64748b', borderRight: '1px solid #e2e8f0', paddingRight: '10px' }}>+48</span>
+              <input type="tel" required placeholder="000000000" style={{ ...inputStyle, paddingLeft: '65px' }} value={formData.customer_phone} onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, '').slice(0, 9);
+                setFormData({ ...formData, customer_phone: val });
+              }} />
+            </div>
+          </div>
+        </div>
 
         {message && (
-          <div className={`message ${message.includes('sukcesem') ? 'success' : 'error'}`}>
-            {message}
+          <div style={{ 
+            padding: '12px', 
+            borderRadius: '12px', 
+            textAlign: 'center', 
+            fontWeight: '600', 
+            background: message.type === 'success' ? '#f0fdf4' : '#fef2f2', 
+            color: message.type === 'success' ? '#166534' : '#991b1b',
+            border: `1px solid ${message.type === 'success' ? '#bbf7d0' : '#fecaca'}`
+          }}>
+            {message.text}
           </div>
         )}
+
+        <button 
+          type="submit" 
+          disabled={loading} 
+          style={{ 
+            marginTop: '5px', 
+            padding: '18px', 
+            borderRadius: '16px', 
+            border: 'none', 
+            background: cityVisual.bg,
+            color: 'white', 
+            fontSize: '1.1rem', 
+            fontWeight: '800', 
+            cursor: loading ? 'not-allowed' : 'pointer', 
+            boxShadow: cityVisual.neon 
+          }}
+        >
+          {loading ? 'Przetwarzanie...' : 'Zatwierdź Rezerwację'}
+        </button>
       </form>
     </div>
   );
-}
+};
 
 export default ReservationForm;

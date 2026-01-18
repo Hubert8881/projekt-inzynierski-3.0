@@ -1,7 +1,9 @@
-import { Pool, PoolConfig } from 'pg';
+import { Pool, PoolConfig, types } from 'pg';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
+
+types.setTypeParser(1082, (val: string): string => val);
 
 const dbConfig: PoolConfig = {
   host: process.env.DB_HOST || 'localhost',
@@ -134,12 +136,6 @@ export const initDatabase = async (): Promise<void> => {
         ('Chleb i Wino', 'Restauracja i winiarnia z klimatem.', 'ul. Rynek Staromiejski 22, 87-100 Toruń', '+48 56 477 60 10', 'rezerwacje@chlebiwino.pl', '{"mon-sun": "12:00-22:00"}', (SELECT id FROM cities WHERE name='Toruń')),
         ('Jan Olbracht', 'Browar restauracyjny z własnym piwem.', 'ul. Szczytna 15, 87-100 Toruń', '+48 56 622 40 99', 'kontakt@olbracht.pl', '{"mon-sun": "12:00-23:00"}', (SELECT id FROM cities WHERE name='Toruń')),
         ('Manekin', 'Naleśnikarnia z bogatym menu.', 'ul. Rynek Staromiejski 16, 87-100 Toruń', '+48 56 623 45 12', 'biuro@manekin.pl', '{"mon-sun": "10:00-22:00"}', (SELECT id FROM cities WHERE name='Toruń'))
-      ON CONFLICT DO NOTHING;
-    `);
-
-    await pool.query(`
-      INSERT INTO menu_items (restaurant_id, name, price)
-      SELECT id, 'Specjał Szefa Kuchni', 49.00 FROM restaurants
       ON CONFLICT DO NOTHING;
     `);
 
