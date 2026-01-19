@@ -33,6 +33,12 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ preselectedRestaurant
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (formData.customer_phone.length !== 9) {
+      setMessage({ type: 'error', text: 'Numer telefonu musi mieć dokładnie 9 cyfr.' });
+      return;
+    }
+
     setLoading(true);
     setMessage(null);
 
@@ -131,10 +137,20 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ preselectedRestaurant
             <label style={labelStyle}>Numer telefonu</label>
             <div style={{ display: 'flex', position: 'relative', alignItems: 'center' }}>
               <span style={{ position: 'absolute', left: '15px', fontWeight: '700', color: '#64748b', borderRight: '1px solid #e2e8f0', paddingRight: '10px' }}>+48</span>
-              <input type="tel" required placeholder="000000000" style={{ ...inputStyle, paddingLeft: '65px' }} value={formData.customer_phone} onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, '').slice(0, 9);
-                setFormData({ ...formData, customer_phone: val });
-              }} />
+              <input 
+                type="tel" 
+                required 
+                placeholder="9 cyfr" 
+                pattern="[0-9]{9}"
+                minLength={9}
+                maxLength={9}
+                style={{ ...inputStyle, paddingLeft: '65px' }} 
+                value={formData.customer_phone} 
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 9);
+                  setFormData({ ...formData, customer_phone: val });
+                }} 
+              />
             </div>
           </div>
         </div>

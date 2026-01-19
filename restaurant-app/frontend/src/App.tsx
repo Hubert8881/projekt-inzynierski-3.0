@@ -63,7 +63,28 @@ function App() {
   const cityColor = currentCityVisual.bg.split(',')[1]?.trim().split(' ')[0] || '#ff7b00';
 
   return (
-    <div className="app-container" style={{ minHeight: '100vh', paddingBottom: '100px' }}>
+    <div className="app-container" style={{ minHeight: '100vh', paddingBottom: '100px', position: 'relative' }}>
+      
+      <div className="modern-mascot left">
+        <div className="character-wrapper">
+          <svg viewBox="0 0 200 200" className="character-svg">
+            <circle cx="100" cy="100" r="90" fill={cityColor} fillOpacity="0.1" />
+            <text x="50%" y="60%" fontSize="100" textAnchor="middle" dominantBaseline="middle">👨‍🍳</text>
+          </svg>
+          <div className="food-bubble">🍕</div>
+        </div>
+      </div>
+
+      <div className="modern-mascot right">
+        <div className="character-wrapper">
+          <svg viewBox="0 0 200 200" className="character-svg">
+            <circle cx="100" cy="100" r="90" fill={cityColor} fillOpacity="0.1" />
+            <text x="50%" y="60%" fontSize="100" textAnchor="middle" dominantBaseline="middle">👩‍💻</text>
+          </svg>
+          <div className="food-bubble">🍹</div>
+        </div>
+      </div>
+
       <button 
         onClick={() => setView('admin')} 
         style={{ position: 'fixed', top: '25px', right: '25px', zIndex: 100, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', border: '1px solid #eee', padding: '10px 20px', borderRadius: '50px', fontWeight: '700', cursor: 'pointer', color: '#64748b', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
@@ -183,9 +204,31 @@ function App() {
           </div>
 
           {showForm && (
-            <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-              <div style={{ background: 'white', width: '100%', maxWidth: '650px', borderRadius: '50px', padding: '60px', position: 'relative', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 50px 100px rgba(0,0,0,0.2)' }}>
-                <button onClick={() => setShowForm(false)} style={{ position: 'absolute', top: '35px', right: '35px', background: '#f1f5f9', border: 'none', width: '45px', height: '45px', borderRadius: '50%', cursor: 'pointer', fontSize: '1.2rem', fontWeight: '800' }}>✕</button>
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(15px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+              <div style={{ background: 'white', width: '100%', maxWidth: '650px', borderRadius: '50px', padding: '60px', position: 'relative', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 50px 100px rgba(0,0,0,0.3)' }}>
+                <button 
+                  onClick={() => setShowForm(false)} 
+                  style={{ 
+                    position: 'absolute', 
+                    top: '30px', 
+                    right: '30px', 
+                    background: '#1a1a1a', 
+                    color: 'white',
+                    border: 'none', 
+                    width: '50px', 
+                    height: '50px', 
+                    borderRadius: '50%', 
+                    cursor: 'pointer', 
+                    fontSize: '1.5rem', 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 10px 20px rgba(0,0,0,0.2)',
+                    zIndex: 10
+                  }}
+                >
+                  ✕
+                </button>
                 <ReservationForm 
                   preselectedRestaurant={selectedRestaurant} 
                   onSuccess={() => setShowForm(false)} 
