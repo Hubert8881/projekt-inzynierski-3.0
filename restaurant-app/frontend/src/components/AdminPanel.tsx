@@ -5,7 +5,12 @@ const AdminPanel = () => {
   const mainOrange = '#ff7b00';
 
   const fetchReservations = () => {
-    fetch('http://localhost:5001/api/reservations')
+    const token = localStorage.getItem('adminToken');
+    fetch('http://localhost:5001/api/reservations', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(res => {
         if (res.success) setReservations(res.data);
@@ -17,7 +22,13 @@ const AdminPanel = () => {
 
   const handleDelete = (id: number) => {
     if (window.confirm('Czy na pewno chcesz usunąć tę rezerwację?')) {
-      fetch(`http://localhost:5001/api/reservations/${id}`, { method: 'DELETE' })
+      const token = localStorage.getItem('adminToken');
+      fetch(`http://localhost:5001/api/reservations/${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
         .then(() => fetchReservations())
         .catch(err => console.error(err));
     }

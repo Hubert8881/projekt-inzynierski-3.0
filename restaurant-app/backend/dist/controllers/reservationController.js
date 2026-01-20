@@ -3,22 +3,53 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReservationController = void 0;
 const database_1 = require("../config/database");
 class ReservationController {
+    static async getAllReservations(req, res) {
+        try {
+            const result = await database_1.pool.query(`
+        SELECT r.*, c.first_name, c.last_name, c.email, c.phone, res.name as restaurant_name 
+        FROM public.reservations r
+        JOIN public.customers c ON r.customer_id = c.id
+        JOIN public.restaurants res ON r.restaurant_id = res.id
+        ORDER BY r.reservation_date DESC, r.reservation_time DESC
+      `);
+            res.json({ success: true, data: result.rows });
+        }
+        catch (error) {
+            console.error('Error fetching reservations:', error);
+            res.status(500).json({ success: false, message: 'Błąd podczas pobierania rezerwacji.' });
+        }
+    }
+    static async deleteReservation(req, res) {
+        const { id } = req.params;
+        try {
+            const result = await database_1.pool.query('DELETE FROM public.reservations WHERE id = $1', [id]);
+            if (result.rowCount === 0) {
+                res.status(404).json({ success: false, message: 'Nie znaleziono rezerwacji o podanym ID.' });
+                return;
+            }
+            res.json({ success: true, message: 'Rezerwacja została pomyślnie usunięta.' });
+        }
+        catch (error) {
+            console.error('Error deleting reservation:', error);
+            res.status(500).json({ success: false, message: 'Błąd podczas usuwania rezerwacji.' });
+        }
+    }
     static async createReservation(req, res) {
         const { restaurant_id, reservation_date, reservation_time, party_size, customer_first_name, customer_last_name, customer_email, customer_phone } = req.body;
-        if (!restaurant_id || !reservation_date || !customer_email) {
-            res.status(400).json({ success: false, message: 'Brak wymaganych danych rezerwacji.' });
+        if (!restaurant_id || !reservation_date || !reservation_time || !customer_email || !customer_first_name) {
+            res.status(400).json({ success: false, message: 'Wypełnij wszystkie wymagane pola formularza.' });
             return;
         }
         const client = await database_1.pool.connect();
         try {
             await client.query('BEGIN');
             const restaurantRes = await client.query('SELECT total_tables FROM public.restaurants WHERE id = $1', [restaurant_id]);
-            const totalTables = restaurantRes.rows[0]?.total_tables || 10;
+            const totalTables = restaurantRes.rows[0]?.total_tables ?? 10;
             const currentRes = await client.query('SELECT COUNT(*) FROM public.reservations WHERE restaurant_id = $1 AND reservation_date = $2 AND reservation_time = $3', [restaurant_id, reservation_date, reservation_time]);
             const bookedTables = parseInt(currentRes.rows[0].count);
             if (bookedTables >= totalTables) {
                 await client.query('ROLLBACK');
-                res.status(400).json({ success: false, message: 'Brak wolnych stolikow na te godzine.' });
+                res.status(400).json({ success: false, message: 'Brak wolnych stolików na wybraną godzinę.' });
                 return;
             }
             let customerResult = await client.query('SELECT id FROM public.customers WHERE email = $1', [customer_email]);
@@ -41,60 +72,27 @@ class ReservationController {
         ) VALUES ($1, $2, $3, $4, $5, 'confirmed')
         RETURNING id;
       `;
-            const reservationValues = [customerId, restaurant_id, reservation_date, reservation_time, party_size];
+            const reservationValues = [customerId, restaurant_id, reservation_date, reservation_time, party_size || 1];
             const result = await client.query(reservationQuery, reservationValues);
             await client.query('COMMIT');
             res.status(201).json({
                 success: true,
-                message: 'Rezerwacja zostala pomyslnie zapisana!',
+                message: 'Rezerwacja została pomyślnie zapisana!',
                 reservationId: result.rows[0].id
             });
         }
         catch (error) {
             await client.query('ROLLBACK');
+            console.error('Database Error:', error);
             if (error.code === '23505') {
-                res.status(400).json({ success: false, message: 'Masz juz rezerwacje w tej restauracji o tej godzinie.' });
+                res.status(400).json({ success: false, message: 'Masz już rezerwację w tym miejscu o tej porze.' });
             }
             else {
-                res.status(500).json({ success: false, message: 'Blad serwera', error: error.message });
+                res.status(500).json({ success: false, message: 'Błąd serwera podczas zapisu.' });
             }
         }
         finally {
             client.release();
-        }
-    }
-    static async getAllReservations(req, res) {
-        try {
-            const query = `
-        SELECT 
-          r.id, 
-          c.first_name, c.last_name, c.email, c.phone,
-          res.name as restaurant_name,
-          r.reservation_date, r.reservation_time, r.party_size
-        FROM public.reservations r
-        JOIN public.customers c ON r.customer_id = c.id
-        JOIN public.restaurants res ON r.restaurant_id = res.id
-        ORDER BY r.reservation_date ASC, r.reservation_time ASC;
-      `;
-            const result = await database_1.pool.query(query);
-            res.json({ success: true, data: result.rows });
-        }
-        catch (error) {
-            res.status(500).json({ success: false, message: error.message });
-        }
-    }
-    static async deleteReservation(req, res) {
-        const { id } = req.params;
-        try {
-            const result = await database_1.pool.query('DELETE FROM public.reservations WHERE id = $1', [id]);
-            if (result.rowCount === 0) {
-                res.status(404).json({ success: false, message: 'Nie znaleziono rezerwacji.' });
-                return;
-            }
-            res.json({ success: true, message: 'Rezerwacja usunieta.' });
-        }
-        catch (error) {
-            res.status(500).json({ success: false, message: error.message });
         }
     }
 }

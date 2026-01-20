@@ -21,6 +21,10 @@ function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [view, setView] = useState<'user' | 'admin'>('user');
+  const [adminToken, setAdminToken] = useState<string | null>(localStorage.getItem('adminToken'));
+  const [adminPassword, setAdminPassword] = useState('');
+
+  const mainOrange = '#ff7b00';
 
   useEffect(() => {
     fetch('http://localhost:5001/api/cities/full-data')
@@ -30,6 +34,39 @@ function App() {
       })
       .catch(err => console.error(err));
   }, []);
+
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    try {
+      const res = await fetch('http://localhost:5001/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: adminPassword })
+      });
+      
+      const result = await res.json();
+
+      if (!res.ok) {
+        alert(result.message || 'Błędne hasło administratora');
+        return;
+      }
+
+      if (result.success) {
+        localStorage.setItem('adminToken', result.token);
+        setAdminToken(result.token);
+        setAdminPassword('');
+        setView('admin');
+      }
+    } catch (err) {
+      alert('Błąd połączenia z serwerem. Upewnij się, że backend działa.');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    setAdminToken(null);
+    setView('user');
+  };
 
   const handleSelectCity = (city: any) => {
     setSelectedCity(city);
@@ -42,14 +79,37 @@ function App() {
   };
 
   if (view === 'admin') {
+    if (!adminToken) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f8fafc' }}>
+          <div style={{ background: 'white', padding: '40px', borderRadius: '30px', width: '100%', maxWidth: '400px', textAlign: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.05)' }}>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: '900', marginBottom: '10px' }}>Panel Administratora</h2>
+            <form onSubmit={handleLogin}>
+              <input 
+                type="password" 
+                value={adminPassword} 
+                onChange={(e) => setAdminPassword(e.target.value)} 
+                placeholder="Hasło" 
+                style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '20px', outline: 'none', boxSizing: 'border-box' }} 
+                required 
+              />
+              <button type="submit" style={{ width: '100%', background: mainOrange, color: 'white', border: 'none', padding: '18px', borderRadius: '18px', fontWeight: '800', cursor: 'pointer', marginBottom: '10px' }}>Zaloguj się</button>
+              <button type="button" onClick={() => setView('user')} style={{ width: '100%', background: '#f1f5f9', color: '#64748b', border: 'none', padding: '12px', borderRadius: '18px', fontWeight: '700', cursor: 'pointer' }}>Anuluj</button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="app-container" style={{ background: '#f8fafc', minHeight: '100vh', padding: '40px 20px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', background: 'white', padding: '20px 30px', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
             <h2 style={{ color: '#1e293b', margin: 0, fontWeight: '800', letterSpacing: '-1px' }}>System Panel</h2>
-            <button className="back-btn" onClick={() => setView('user')} style={{ background: '#1e293b', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '600', cursor: 'pointer' }}>
-              Wróć do serwisu
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={handleLogout} style={{ background: '#ef4444', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '600', cursor: 'pointer' }}>Wyloguj</button>
+              <button className="back-btn" onClick={() => setView('user')} style={{ background: '#1e293b', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '14px', fontWeight: '600', cursor: 'pointer' }}>Wróć do serwisu</button>
+            </div>
           </nav>
           <div style={{ background: 'white', borderRadius: '32px', padding: '40px', boxShadow: '0 20px 40px rgba(0,0,0,0.04)' }}>
             <AdminView />
@@ -64,7 +124,6 @@ function App() {
 
   return (
     <div className="app-container" style={{ minHeight: '100vh', paddingBottom: '100px', position: 'relative' }}>
-      
       <div className="modern-mascot left">
         <div className="character-wrapper">
           <svg viewBox="0 0 200 200" className="character-svg">
@@ -74,7 +133,6 @@ function App() {
           <div className="food-bubble">🍕</div>
         </div>
       </div>
-
       <div className="modern-mascot right">
         <div className="character-wrapper">
           <svg viewBox="0 0 200 200" className="character-svg">
@@ -84,14 +142,12 @@ function App() {
           <div className="food-bubble">🍹</div>
         </div>
       </div>
-
       <button 
         onClick={() => setView('admin')} 
         style={{ position: 'fixed', top: '25px', right: '25px', zIndex: 100, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', border: '1px solid #eee', padding: '10px 20px', borderRadius: '50px', fontWeight: '700', cursor: 'pointer', color: '#64748b', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
       >
         Admin Access
       </button>
-
       {step === 0 && (
         <div className="city-selection" style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
@@ -100,7 +156,6 @@ function App() {
             </h1>
             <p style={{ fontSize: '1.1rem', color: '#64748b', fontWeight: '500' }}>Wybierz miasto i odkryj najlepsze smaki.</p>
           </div>
-          
           <div className="city-grid-main" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '25px' }}>
             {data.map(city => {
               const visual = getCityVisuals(city.name);
@@ -137,7 +192,6 @@ function App() {
           </div>
         </div>
       )}
-
       {step === 1 && selectedCity && (
         <div style={{ padding: '80px 20px', maxWidth: '800px', margin: '0 auto' }}>
           <button onClick={() => setStep(0)} style={{ border: 'none', background: 'white', padding: '12px 24px', borderRadius: '15px', fontWeight: '700', cursor: 'pointer', color: '#64748b', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', marginBottom: '40px' }}>
@@ -171,14 +225,12 @@ function App() {
           </div>
         </div>
       )}
-
       {step === 2 && selectedRestaurant && (
         <div style={{ padding: '60px 20px', maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '50px' }}>
           <div>
             <button onClick={() => setStep(1)} style={{ border: 'none', background: 'none', fontWeight: '700', color: '#64748b', cursor: 'pointer', marginBottom: '20px' }}>← Wróć do listy</button>
             <h1 style={{ fontSize: '4.5rem', fontWeight: '900', color: '#1e293b', margin: '0 0 20px 0', letterSpacing: '-3px' }}>{selectedRestaurant.name}</h1>
             <p style={{ fontSize: '1.3rem', color: '#64748b', lineHeight: '1.6', marginBottom: '50px' }}>{selectedRestaurant.description}</p>
-            
             <div style={{ background: 'white', padding: '50px', borderRadius: '45px', boxShadow: currentCityVisual.neon, border: `1px solid ${cityColor}22` }}>
               <h3 style={{ fontSize: '1.8rem', fontWeight: '800', marginBottom: '40px', borderBottom: `4px solid ${cityColor}`, paddingBottom: '20px' }}>Karta Dań</h3>
               {selectedRestaurant.menu?.map((item: any, idx: number) => (
@@ -189,7 +241,6 @@ function App() {
               ))}
             </div>
           </div>
-
           <div style={{ position: 'sticky', top: '40px', height: 'fit-content' }}>
             <div style={{ background: '#1e293b', padding: '60px', borderRadius: '50px', color: 'white', boxShadow: `0 40px 80px rgba(0,0,0,0.2)`, border: `2px solid ${cityColor}` }}>
               <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '20px', letterSpacing: '-1px' }}>Zarezerwuj stolik</h2>
@@ -202,7 +253,6 @@ function App() {
               </button>
             </div>
           </div>
-
           {showForm && (
             <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(15px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
               <div style={{ background: 'white', width: '100%', maxWidth: '650px', borderRadius: '50px', padding: '60px', position: 'relative', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 50px 100px rgba(0,0,0,0.3)' }}>

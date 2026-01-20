@@ -2,6 +2,37 @@ import { Request, Response } from 'express';
 import { pool } from '../config/database';
 
 export class ReservationController {
+  static async getAllReservations(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await pool.query(`
+        SELECT r.*, c.first_name, c.last_name, c.email, c.phone, res.name as restaurant_name 
+        FROM public.reservations r
+        JOIN public.customers c ON r.customer_id = c.id
+        JOIN public.restaurants res ON r.restaurant_id = res.id
+        ORDER BY r.reservation_date DESC, r.reservation_time DESC
+      `);
+      res.json({ success: true, data: result.rows });
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+      res.status(500).json({ success: false, message: 'Błąd podczas pobierania rezerwacji.' });
+    }
+  }
+
+  static async deleteReservation(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      const result = await pool.query('DELETE FROM public.reservations WHERE id = $1', [id]);
+      if (result.rowCount === 0) {
+        res.status(404).json({ success: false, message: 'Nie znaleziono rezerwacji o podanym ID.' });
+        return;
+      }
+      res.json({ success: true, message: 'Rezerwacja została pomyślnie usunięta.' });
+    } catch (error) {
+      console.error('Error deleting reservation:', error);
+      res.status(500).json({ success: false, message: 'Błąd podczas usuwania rezerwacji.' });
+    }
+  }
+
   static async createReservation(req: Request, res: Response): Promise<void> {
     const {
       restaurant_id,
