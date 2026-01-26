@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReservationForm from './components/ReservationForm';
 import AdminView from './components/AdminView';
+import api from './api';
 import './styles.css';
 
 const getCityVisuals = (cityName: string) => {
@@ -21,10 +22,19 @@ function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [view, setView] = useState<'user' | 'admin'>('user');
-  const [adminToken, setAdminToken] = useState<string | null>(localStorage.getItem('adminToken'));
+  const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('accessToken'));
   const [adminPassword, setAdminPassword] = useState('');
 
   const mainOrange = '#ff7b00';
+
+  const validatePassword = (pass: string) => {
+    return pass.length >= 8 && 
+           /[A-Z]/.test(pass) && 
+           /[0-9]/.test(pass) && 
+           /[^a-zA-Z0-9]/.test(pass);
+  };
+
+  const isPasswordValid = validatePassword(adminPassword);
 
   useEffect(() => {
     fetch('http://localhost:5001/api/cities/full-data')
@@ -37,35 +47,31 @@ function App() {
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (!isPasswordValid) return;
+
     try {
-      const res = await fetch('http://localhost:5001/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: adminPassword })
-      });
+      const res = await api.post('/login', { password: adminPassword });
       
-      const result = await res.json();
-
-      if (!res.ok) {
-        alert(result.message || 'Błędne hasło administratora');
-        return;
-      }
-
-      if (result.success) {
-        localStorage.setItem('adminToken', result.token);
-        setAdminToken(result.token);
+      if (res.data.success) {
+        localStorage.setItem('accessToken', res.data.accessToken);
+        setAccessToken(res.data.accessToken);
         setAdminPassword('');
         setView('admin');
       }
-    } catch (err) {
-      alert('Błąd połączenia z serwerem. Upewnij się, że backend działa.');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Błąd logowania');
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    setAdminToken(null);
-    setView('user');
+  const handleLogout = async () => {
+    try {
+      await api.post('/logout');
+      localStorage.removeItem('accessToken');
+      setAccessToken(null);
+      setView('user');
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleSelectCity = (city: any) => {
@@ -79,7 +85,7 @@ function App() {
   };
 
   if (view === 'admin') {
-    if (!adminToken) {
+    if (!accessToken) {
       return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f8fafc' }}>
           <div style={{ background: 'white', padding: '40px', borderRadius: '30px', width: '100%', maxWidth: '400px', textAlign: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.05)' }}>
@@ -90,10 +96,21 @@ function App() {
                 value={adminPassword} 
                 onChange={(e) => setAdminPassword(e.target.value)} 
                 placeholder="Hasło" 
-                style={{ width: '100%', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '20px', outline: 'none', boxSizing: 'border-box' }} 
+                style={{ width: '100%', padding: '16px', borderRadius: '16px', border: isPasswordValid || adminPassword === '' ? '1px solid #e2e8f0' : '1px solid #ef4444', marginBottom: '10px', outline: 'none', boxSizing: 'border-box' }} 
                 required 
               />
-              <button type="submit" style={{ width: '100%', background: mainOrange, color: 'white', border: 'none', padding: '18px', borderRadius: '18px', fontWeight: '800', cursor: 'pointer', marginBottom: '10px' }}>Zaloguj się</button>
+              {!isPasswordValid && adminPassword !== '' && (
+                <p style={{ color: '#ef4444', fontSize: '0.75rem', marginBottom: '15px', fontWeight: '600' }}>
+                  Hasło za słabe (min. 8 znaków, wielka litera, cyfra i znak specjalny)
+                </p>
+              )}
+              <button 
+                type="submit" 
+                disabled={!isPasswordValid}
+                style={{ width: '100%', background: isPasswordValid ? mainOrange : '#cbd5e1', color: 'white', border: 'none', padding: '18px', borderRadius: '18px', fontWeight: '800', cursor: isPasswordValid ? 'pointer' : 'not-allowed', marginBottom: '10px' }}
+              >
+                Zaloguj się
+              </button>
               <button type="button" onClick={() => setView('user')} style={{ width: '100%', background: '#f1f5f9', color: '#64748b', border: 'none', padding: '12px', borderRadius: '18px', fontWeight: '700', cursor: 'pointer' }}>Anuluj</button>
             </form>
           </div>

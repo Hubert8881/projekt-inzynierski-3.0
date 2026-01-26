@@ -1,36 +1,33 @@
 import React, { useEffect, useState } from 'react';
+import api from '../api';
 
 const AdminPanel = () => {
   const [reservations, setReservations] = useState<any[]>([]);
   const mainOrange = '#ff7b00';
 
-  const fetchReservations = () => {
-    const token = localStorage.getItem('adminToken');
-    fetch('http://localhost:5001/api/reservations', {
-      headers: {
-        'Authorization': `Bearer ${token}`
+  const fetchReservations = async () => {
+    try {
+      const res = await api.get('/reservations');
+      if (res.data.success) {
+        setReservations(res.data.data);
       }
-    })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success) setReservations(res.data);
-      })
-      .catch(err => console.error(err));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  useEffect(() => { fetchReservations(); }, []);
+  useEffect(() => {
+    fetchReservations();
+  }, []);
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm('Czy na pewno chcesz usunąć tę rezerwację?')) {
-      const token = localStorage.getItem('adminToken');
-      fetch(`http://localhost:5001/api/reservations/${id}`, { 
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-        .then(() => fetchReservations())
-        .catch(err => console.error(err));
+      try {
+        await api.delete(`/reservations/${id}`);
+        fetchReservations();
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
