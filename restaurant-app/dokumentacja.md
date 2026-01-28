@@ -153,6 +153,15 @@ W tradycyjnym modelu pracy, który system ma zastąpić, proces rezerwacji opier
 
 ### 4.4. Przypadki użycia (Use Case)
 
+<br>
+<figure style="text-align: center;">
+    <img src="./img/uml.png" alt="Diagram przypadków użycia" width="100%">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 4.1.</strong> Diagram przypadków użycia (UML) obrazujący interakcje aktorów z systemem.
+    </figcaption>
+</figure>
+<br>
+
 #### UC1: Złożenie rezerwacji przez Klienta
 * **Aktor główny:** Klient.
 * **Scenariusz:** Klient wchodzi na stronę główną, wypełnia formularz rezerwacji, przechodzi pomyślnie walidację i zatwierdza wybór. System zapisuje dane w bazie i wyświetla komunikat o sukcesie.
@@ -169,6 +178,15 @@ W tradycyjnym modelu pracy, który system ma zastąpić, proces rezerwacji opier
 
 ### 5.1. Architektura systemu
 System został zaprojektowany w oparciu o architekturę trójwarstwową, co zapewnia wysoką separację odpowiedzialności oraz ułatwia przyszłą skalowalność i konserwację oprogramowania.
+
+<br>
+<figure style="text-align: center;">
+    <img src="./img/diagram_5.1.png" alt="Schemat architektury" width="90%">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 5.1.</strong> Schemat architektury trójwarstwowej (Client-Server-Database) zaimplementowanego rozwiązania.
+    </figcaption>
+</figure>
+<br>
 
 * **Warstwa prezentacji (Frontend):** Zaimplementowana jako Single Page Application (SPA). Odpowiada za renderowanie interfejsu, obsługę interakcji z użytkownikiem oraz wstępną walidację danych formularzy. Komunikuje się z warstwą logiki za pomocą asynchronicznych zapytań HTTP (REST API).
 * **Warstwa logiki biznesowej (Backend):** Serwer aplikacji pełniący rolę pośrednika. Realizuje procesy autoryzacji, zaawansowaną walidację (Zod), sanityzację danych oraz zarządza bezpieczeństwem sesji (JWT).
@@ -419,3 +437,81 @@ Główny cel pracy, polegający na zaprojektowaniu i implementacji nowoczesnego 
 * **Integracja z AI:** Zastosowanie algorytmów uczenia maszynowego do przewidywania prawdopodobieństwa rezygnacji klienta z rezerwacji na podstawie historycznych danych behawioralnych.
 * **Powiadomienia i przypomnienia:** Wdrożenie automatycznych komunikatów wysyłanych drogą mailową lub SMS na 24 godziny przed planowaną wizytą.
 * **Aplikacja mobilna (PWA):** Przekształcenie obecnego frontendu w progresywną aplikację webową, co umożliwi instalację systemu na smartfonach pracowników i otrzymywanie powiadomień typu *Push* o nowych rezerwacjach.
+
+## 11. Bibliografia
+
+1.  Parlament Europejski i Rada (UE). (2016). *Rozporządzenie 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych (RODO)*. Dziennik Urzędowy Unii Europejskiej.
+2.  Meta Open Source. *React – The library for web and native user interfaces*. Dokumentacja techniczna dostępna online: https://react.dev/ [Dostęp: 2026-01-28].
+3.  OpenJS Foundation. *Node.js v18.x Documentation*. Dokumentacja techniczna dostępna online: https://nodejs.org/docs/latest-v18.x/api/ [Dostęp: 2026-01-28].
+4.  The PostgreSQL Global Development Group. *PostgreSQL 14.15 Documentation*. Dokumentacja techniczna dostępna online: https://www.postgresql.org/docs/14/index.html [Dostęp: 2026-01-28].
+5.  Microsoft. *TypeScript Handbook*. Dokumentacja techniczna dostępna online: https://www.typescriptlang.org/docs/ [Dostęp: 2026-01-28].
+6.  OWASP Foundation. *OWASP Top 10:2021*. Raport bezpieczeństwa aplikacji webowych. Dostępny online: https://owasp.org/Top10/ [Dostęp: 2026-01-28].
+7.  MDN Web Docs. *HTTP Cookies and Set-Cookie header*. Mozilla Developer Network. Dostępne online: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies [Dostęp: 2026-01-28].
+8.  Freeman, A. (2020). *Pro React 16*. Apress.
+9.  Simpson, K. (2015). *You Don't Know JS: Async & Performance*. O'Reilly Media.
+
+## 12. Załączniki
+
+**Załącznik 1. Repozytorium kodu źródłowego**
+Pełny kod źródłowy projektu, wraz z historią zmian (commits) oraz dokumentacją wdrożeniową README, znajduje się w publicznym repozytorium w serwisie GitHub:
+* **Link:** [`https://github.com/Hubert8881/projekt-inzynierski-3.0/tree/main`]
+
+**Załącznik 2. Struktura pliku konfiguracyjnego (.env)**
+Wzór zmiennych środowiskowych niezbędnych do uruchomienia serwera (plik `.env.example`). Ze względów bezpieczeństwa, rzeczywiste klucze nie są dołączane do dokumentacji drukowanej.
+
+```text
+# Konfiguracja Serwera
+PORT=5001
+NODE_ENV=development
+
+# Baza Danych (PostgreSQL)
+DB_USER=postgres
+DB_PASSWORD=secret_password
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=restaurant_db
+
+# Bezpieczeństwo (JWT Secrets)
+# Wygenerowane losowe ciągi znaków (minimum 32 znaki)
+JWT_SECRET=twoj_bardzo_dlugi_i_tajny_klucz_access
+JWT_REFRESH_SECRET=twoj_bardzo_dlugi_i_tajny_klucz_refresh
+```
+
+**Załącznik 3. Skrypt inicjalizujący bazę danych (Fragment SQL)**
+Poniżej przedstawiono kluczowe zapytania SQL tworzące strukturę tabel opisaną w rozdziale 5.2. Skrypt ten definiuje relacje oraz ograniczenia (constraints) zapewniające integralność danych.
+
+```sql
+-- 1. Tabela kont administratorów
+CREATE TABLE IF NOT EXISTS admin_account (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    login_attempts INT DEFAULT 0,
+    lock_until TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Tabela rezerwacji (Główna tabela systemu)
+CREATE TABLE IF NOT EXISTS reservations (
+    id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20),
+    party_size INT NOT NULL CHECK (party_size > 0 AND party_size <= 20),
+    reservation_date TIMESTAMP NOT NULL,
+    status VARCHAR(20) DEFAULT 'CONFIRMED', -- np. CONFIRMED, CANCELLED
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Tabela logów bezpieczeństwa (Audit Logs)
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id SERIAL PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL, -- np. 'LOGIN_SUCCESS', 'LOGIN_FAILURE', 'DELETE_RES'
+    ip_address VARCHAR(45),          -- Obsługa IPv4 oraz IPv6
+    details TEXT,                    -- Dodatkowe szczegóły zdarzenia
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Przykładowe indeksy dla optymalizacji wyszukiwania
+CREATE INDEX idx_reservations_date ON reservations(reservation_date);
+CREATE INDEX idx_reservations_email ON reservations(email);
