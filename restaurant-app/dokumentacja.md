@@ -1,30 +1,38 @@
-STRONA TYTUŁOWA
+<table style="width: 100%; border: none; margin-bottom: 40px;">
+    <tr style="border: none;">
+        <td style="width: 60%; vertical-align: top; text-align: left; border: none; padding: 0;">
+            <strong>STRONA TYTUŁOWA</strong><br>
+            <br>
+            Uczelnia: Uniwersytet Merito Toruń<br>
+            Kierunek: Informatyka w Biznesie
+        </td>
+        <td style="width: 40%; vertical-align: top; text-align: right; border: none; padding: 0;">
+            Toruń, 2026<br>
+            <br>
+            <img src="./img/logo.png" alt="Logo WSB" width="150">
+        </td>
+    </tr>
+</table>
 
-Uczelnia: Uniwersytet Merito Toruń
-Kierunek: Informatyka w Biznesie 
 
-<br>
-<br>
-<br>
+<div style="text-align: center; margin-bottom: 40px;">
+    <h2>PROJEKT INŻYNIERSKI</h2>
+</div>
 
-Projekt Inżynierski
-
-Projekt i implementacja nowoczesnego systemu rezerwacji stolików z zaawansowanym modułem zarządzania i bezpieczeństwa danych w sektorze gastronomicznym
+<div style="text-align: left;">
+    
+<h3>Projekt i implementacja nowoczesnego systemu rezerwacji stolików z zaawansowanym modułem zarządzania i bezpieczeństwa danych w sektorze gastronomicznym</h3>
+    
 <br>
 <br>
-
-Autorzy: Hubert Pawlak, Bartłomiej Niemyjski, Dominik Drożdżewski  
-
+    
+<strong>Autorzy:</strong><br>
+Hubert Pawlak (53516)<br>
+Bartłomiej Niemyjski (54586)<br>
+Dominik Drożdżewski (54013)<br>
 <br>
-
-Promotor: Cezary Graul 
-
-<br>
-<br>
-<br>
-<br>
-
-Toruń, 2026
+    
+   <strong>Promotor: Cezary Graul</strong><br>
 
 ## Spis treści
 - [Spis treści](#spis-treści)
@@ -112,6 +120,8 @@ Modern web technologies from the JavaScript ecosystem were used in the developme
 
 The most significant result of the project is the delivery of a stable application that significantly improves business processes in a restaurant. The benefits of implementing the system include the elimination of errors resulting from manual record-keeping, increased security of customers' personal data, and providing management with tools to monitor system security in real time.
 
+<br>
+
 ## 2. Wstęp
 
 ### 2.1. Cel pracy
@@ -133,6 +143,8 @@ Głównym celem niniejszej pracy inżynierskiej jest zaprojektowanie, implementa
 ### 2.3. Metodyka realizacji
 Praca nad systemem prowadzona była w modelu iteracyjnym. Podejście to pozwoliło na elastyczne reagowanie na pojawiające się wyzwania techniczne, szczególnie w obszarze integracji warstwy serwerowej z bazą danych. Proces wytwórczy został podzielony na cykle, z których każdy kończył się testami konkretnej funkcjonalności – od fundamenów bazy danych, przez logikę API, po zabezpieczenia interfejsu. Taka metodyka umożliwiła wczesne wykrywanie potencjalnych luk w bezpieczeństwie i ich sukcesywną eliminację.
 
+<br>
+
 ### 2.4. Struktura pracy
 
 1. **Streszczenie i Abstract** – zawiera zwięzły opis celów, technologii i rezultatów projektu w języku polskim i angielskim.
@@ -146,6 +158,8 @@ Praca nad systemem prowadzona była w modelu iteracyjnym. Podejście to pozwoli�
 9. **Aspekty biznesowe, bezpieczeństwo i dane** – analizuje korzyści z wdrożenia, zgodność z RODO oraz spójność danych.
 10. **Podsumowanie i dalszy rozwój** – weryfikuje osiągnięcie celów i kreśli wizję przyszłej rozbudowy systemu.
 11. **Bibliografia i Załączniki** – zestawia źródła wiedzy oraz dodatkowe materiały techniczne.
+
+<br>
 
 ## 3. Charakterystyka problemu i kontekstu biznesowego
 
@@ -178,6 +192,8 @@ W tradycyjnym modelu pracy, który system ma zastąpić, proces rezerwacji opier
 | **Klienci restauracji** | Szybki i intuicyjny proces rezerwacji, natychmiastowe potwierdzenie, pewność ochrony danych osobowych, dostępność usługi na urządzeniach mobilnych. |
 | **Administrator / Manager** | Przejrzysty wgląd w listę rezerwacji, narzędzia do edycji i usuwania błędnych wpisów, bezpieczeństwo panelu zarządzania, monitoring prób nieautoryzowanego dostępu (Audit Logs). |
 | **Właściciel biznesu** | Stabilność systemu, minimalizacja strat wynikających z błędów personelu, posiadanie wiarygodnych danych o ruchu w lokalu. |
+
+<br>
 
 ## 4. Wymagania systemu
 
@@ -213,11 +229,13 @@ W tradycyjnym modelu pracy, który system ma zastąpić, proces rezerwacji opier
 * **Baza danych:** System PostgreSQL w wersji 14 lub nowszej.
 * **Dostęp:** Wymagane stałe połączenie z Internetem dla komunikacji warstwy prezentacji z API.
 
+<div style="page-break-after: always;"></div>
+
 ### 4.4. Przypadki użycia (Use Case)
 
 <br>
 <figure style="text-align: center;">
-    <img src="./img/uml.png" alt="Diagram przypadków użycia" width="70%">
+    <img src="./img/uml.png" alt="Diagram przypadków użycia" width="65%">
     <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
         <strong>Rys. 4.1.</strong> Diagram przypadków użycia (UML) obrazujący interakcje aktorów z systemem.
     </figcaption>
@@ -241,14 +259,17 @@ W tradycyjnym modelu pracy, który system ma zastąpić, proces rezerwacji opier
 ### 5.1. Architektura systemu
 System został zaprojektowany w oparciu o architekturę trójwarstwową, co zapewnia wysoką separację odpowiedzialności oraz ułatwia przyszłą skalowalność i konserwację oprogramowania.
 
+
 <br>
 <figure style="text-align: center;">
-    <img src="./img/diagram_5.1.png" alt="Schemat architektury" width="70%">
+    <img src="./img/diagram_5.1.png" alt="Schemat architektury" width="50%">
     <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
         <strong>Rys. 5.1.</strong> Schemat architektury trójwarstwowej (Client-Server-Database) zaimplementowanego rozwiązania.
     </figcaption>
 </figure>
 <br>
+
+<div style="page-break-after: always;"></div>
 
 * **Warstwa prezentacji (Frontend):** Zaimplementowana jako Single Page Application (SPA). Odpowiada za renderowanie interfejsu, obsługę interakcji z użytkownikiem oraz wstępną walidację danych formularzy. Komunikuje się z warstwą logiki za pomocą asynchronicznych zapytań HTTP (REST API).
 * **Warstwa logiki biznesowej (Backend):** Serwer aplikacji pełniący rolę pośrednika. Realizuje procesy autoryzacji, zaawansowaną walidację (Zod), sanityzację danych oraz zarządza bezpieczeństwem sesji (JWT).
@@ -276,6 +297,8 @@ Projekt interfejsu opiera się na zasadzie minimalizmu i intuicyjności. Nawigac
 4.  **Reakcja:**
     * W przypadku sukcesu: Reset licznika prób, wygenerowanie tokenów JWT i wpis do Audit Logs.
     * W przypadku błędu: Inkrementacja licznika prób, ewentualne nałożenie blokady czasowej i wpis o błędnym logowaniu do Audit Logs.
+
+<div style="page-break-after: always;"></div>
 
 ## 6. Implementacja rozwiązania
 ### 6.1. Zastosowane technologie i narzędzia
@@ -339,6 +362,8 @@ await pool.query(
   ['LOGIN_ATTEMPT', req.ip, isSuccess, User: ${username}]
 );
 ```
+<br>
+
 ## 7. Testowanie
 
 ### 7.1. Zakres i strategia testów
@@ -375,6 +400,7 @@ Przeprowadzone testy wykazały, że system jest stabilny i odporny na podstawowe
     * System nie posiada obecnie mechanizmu automatycznego powiadamiania administratora o nałożeniu blokady konta (np. drogą mailową) – informacja ta dostępna jest jedynie po próbie logowania lub w logach.
     * Wydajność systemu przy ekstremalnym obciążeniu (powyżej 500 zapytań na sekundę) może wymagać wdrożenia mechanizmów cacheowania (np. Redis).
 
+
 ## 8. Instrukcja uruchomienia i użytkowania
 
 ### 8.1. Wymagania instalacyjne
@@ -408,6 +434,8 @@ Proces uruchomienia aplikacji składa się z etapu konfiguracji bazy danych oraz
     cd backend && npm install
     cd ../frontend && npm install
     ```
+<div style="page-break-after: always;"></div>
+
 3.  **Start systemu:** Uruchom serwer i interfejs komendą:
     ```bash
     # W folderze backend
@@ -493,8 +521,10 @@ Proces uruchomienia aplikacji składa się z etapu konfiguracji bazy danych oraz
 * `/` – Formularz rezerwacji dla gości.
 * `/admin` – Ekran logowania do panelu zarządzania.
 * `/admin-dashboard` – Chroniony panel administratora (wymaga ważnego tokena JWT).
-    
- ## 9. Aspekty biznesowe, bezpieczeństwo i dane
+
+<br>    
+ 
+## 9. Aspekty biznesowe, bezpieczeństwo i dane
 
 ### 9.1. Korzyści biznesowe wdrożenia systemu
 
@@ -523,6 +553,8 @@ Wdrożenie autorskiego systemu rezerwacji przekłada się na realne usprawnienie
     * **Prawo do bycia zapomnianym:** Administrator ma możliwość natychmiastowego usunięcia wszystkich danych klienta na jego żądanie za pomocą funkcji w panelu zarządzania.
     * **Ograniczenie przechowywania:** Dane rezerwacji historycznych mogą być okresowo czyszczone, co zapobiega nadmiarowemu składowaniu informacji wrażliwych.
 * **Zabezpieczenia techniczne:** Szyfrowanie haseł algorytmem Bcrypt oraz bezpieczna transmisja danych (HTTPS/SSL w środowisku produkcyjnym) zapewniają, że dane nie wpadną w niepowołane ręce nawet w przypadku próby przechwycenia ruchu sieciowego.   
+
+<br>
 
 ## 10. Podsumowanie i dalszy rozwój
 
@@ -556,7 +588,7 @@ Główny cel pracy, polegający na zaprojektowaniu i implementacji nowoczesnego 
 * **Powiadomienia i przypomnienia:** Wdrożenie automatycznych komunikatów wysyłanych drogą mailową lub SMS na 24 godziny przed planowaną wizytą.
 * **Aplikacja mobilna (PWA):** Przekształcenie obecnego frontendu w progresywną aplikację webową, co umożliwi instalację systemu na smartfonach pracowników i otrzymywanie powiadomień typu *Push* o nowych rezerwacjach.
 
-<div style="page-break-after: always;"></div>
+<br>
 
 ## 11. Wykaz ważniejszych skrótów i pojęć
 
@@ -571,6 +603,8 @@ Główny cel pracy, polegający na zaprojektowaniu i implementacji nowoczesnego 
 | **SPA** | *Single Page Application* – aplikacja internetowa działająca w obrębie jednej strony, dynamicznie doczytująca treść. |
 | **SQL** | *Structured Query Language* – strukturalny język zapytań do baz danych. |
 
+<br>
+
 ## 12. Bibliografia
 
 1.  Parlament Europejski i Rada (UE). (2016). *Rozporządzenie 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych (RODO)*. Dziennik Urzędowy Unii Europejskiej.
@@ -583,7 +617,7 @@ Główny cel pracy, polegający na zaprojektowaniu i implementacji nowoczesnego 
 8.  Freeman, A. (2020). *Pro React 16*. Apress.
 9.  Simpson, K. (2015). *You Don't Know JS: Async & Performance*. O'Reilly Media.
 
-<div style="page-break-after: always;"></div>
+<br>
 
 ## 13. Spis rysunków
 
@@ -597,11 +631,14 @@ Główny cel pracy, polegający na zaprojektowaniu i implementacji nowoczesnego 
 * **Rys. 8.5.** Panel dashboardu wyświetlający listę aktywnych rezerwacji.
 * **Rys. 8.6.** Moduł monitoringu systemu (Audit Logs) rejestrujący zdarzenia.
 
+<div style="page-break-after: always;"></div>
+
 ## 14. Załączniki
 
 **Załącznik 1. Repozytorium kodu źródłowego**
 Pełny kod źródłowy projektu, wraz z historią zmian (commits) oraz dokumentacją wdrożeniową README, znajduje się w publicznym repozytorium w serwisie GitHub:
 * **Link:** [`https://github.com/Hubert8881/projekt-inzynierski-3.0/tree/main`]
+* Hasło panel administratora: Admin123!
 
 **Załącznik 2. Struktura pliku konfiguracyjnego (.env)**
 Wzór zmiennych środowiskowych niezbędnych do uruchomienia serwera (plik `.env.example`). Ze względów bezpieczeństwa, rzeczywiste klucze nie są dołączane do dokumentacji drukowanej.
