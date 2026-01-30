@@ -26,6 +26,68 @@ Promotor: Cezary Graul
 
 Toruń, 2026
 
+## Spis treści
+- [Spis treści](#spis-treści)
+- [1. Streszczenie i Abstract](#1-streszczenie-i-abstract)
+  - [1.1. Streszczenie](#11-streszczenie)
+  - [1.2. Abstract](#12-abstract)
+- [2. Wstęp](#2-wstęp)
+  - [2.1. Cel pracy](#21-cel-pracy)
+  - [2.2. Zakres projektu](#22-zakres-projektu)
+  - [2.3. Metodyka realizacji](#23-metodyka-realizacji)
+  - [2.4. Struktura pracy](#24-struktura-pracy)
+- [3. Charakterystyka problemu i kontekstu biznesowego](#3-charakterystyka-problemu-i-kontekstu-biznesowego)
+  - [3.1. Opis domeny i branży](#31-opis-domeny-i-branży)
+  - [3.2. Opis aktualnego sposobu działania (proces „przed systemem”)](#32-opis-aktualnego-sposobu-działania-proces-przed-systemem)
+  - [3.3. Identyfikacja problemów](#33-identyfikacja-problemów)
+  - [3.4. Cele biznesowe wdrożenia systemu](#34-cele-biznesowe-wdrożenia-systemu)
+  - [3.5. Identyfikacja interesariuszy i ich potrzeb](#35-identyfikacja-interesariuszy-i-ich-potrzeb)
+- [4. Wymagania systemu](#4-wymagania-systemu)
+  - [4.1. Wymagania funkcjonalne](#41-wymagania-funkcjonalne)
+  - [4.2. Wymagania niefunkcjonalne](#42-wymagania-niefunkcjonalne)
+  - [4.3. Wymagania techniczne](#43-wymagania-techniczne)
+  - [4.4. Przypadki użycia (Use Case)](#44-przypadki-użycia-use-case)
+    - [UC1: Złożenie rezerwacji przez Klienta](#uc1-złożenie-rezerwacji-przez-klienta)
+    - [UC2: Logowanie do panelu administratora](#uc2-logowanie-do-panelu-administratora)
+    - [UC3: Monitoring prób nieautoryzowanego dostępu](#uc3-monitoring-prób-nieautoryzowanego-dostępu)
+- [5. Projekt systemu](#5-projekt-systemu)
+  - [5.1. Architektura systemu](#51-architektura-systemu)
+  - [5.2. Model danych](#52-model-danych)
+  - [5.3. Projekt interfejsu użytkownika](#53-projekt-interfejsu-użytkownika)
+  - [5.4. Logika działania](#54-logika-działania)
+- [6. Implementacja rozwiązania](#6-implementacja-rozwiązania)
+  - [6.1. Zastosowane technologie i narzędzia](#61-zastosowane-technologie-i-narzędzia)
+  - [6.2. Struktura projektu](#62-struktura-projektu)
+  - [6.3. Wybrane elementy implementacji](#63-wybrane-elementy-implementacji)
+    - [6.3.1. Mechanizm bezpiecznej autoryzacji i sesji](#631-mechanizm-bezpiecznej-autoryzacji-i-sesji)
+- [7. Testowanie](#7-testowanie)
+  - [7.1. Zakres i strategia testów](#71-zakres-i-strategia-testów)
+  - [7.2. Scenariusze testowe](#72-scenariusze-testowe)
+  - [7.3. Wyniki testów i wnioski](#73-wyniki-testów-i-wnioski)
+- [8. Instrukcja uruchomienia i użytkowania](#8-instrukcja-uruchomienia-i-użytkowania)
+  - [8.1. Wymagania instalacyjne](#81-wymagania-instalacyjne)
+  - [8.2. Instrukcja uruchomienia](#82-instrukcja-uruchomienia)
+    - [8.2.1. Przygotowanie bazy danych](#821-przygotowanie-bazy-danych)
+    - [8.2.2. Uruchomienie aplikacji](#822-uruchomienie-aplikacji)
+  - [8.3. Instrukcja użytkownika](#83-instrukcja-użytkownika)
+    - [8.3.1. Rezerwacja stolika (Widok Klienta)](#831-rezerwacja-stolika-widok-klienta)
+    - [8.3.2. Zarządzanie systemem (Widok Administratora)](#832-zarządzanie-systemem-widok-administratora)
+    - [8.3.3. Ścieżki nawigacji](#833-ścieżki-nawigacji)
+- [9. Aspekty biznesowe, bezpieczeństwo i dane](#9-aspekty-biznesowe-bezpieczeństwo-i-dane)
+  - [9.1. Korzyści biznesowe wdrożenia systemu](#91-korzyści-biznesowe-wdrożenia-systemu)
+  - [9.2. Bezpieczeństwo i spójność danych](#92-bezpieczeństwo-i-spójność-danych)
+  - [9.3. Ochrona danych osobowych (Zgodność z RODO)](#93-ochrona-danych-osobowych-zgodność-z-rodo)
+- [10. Podsumowanie i dalszy rozwój](#10-podsumowanie-i-dalszy-rozwój)
+  - [10.1. Podsumowanie realizacji celu pracy](#101-podsumowanie-realizacji-celu-pracy)
+  - [10.2. Wnioski autora](#102-wnioski-autora)
+  - [10.3. Kierunki dalszego rozwoju systemu](#103-kierunki-dalszego-rozwoju-systemu)
+- [11. Wykaz ważniejszych skrótów i pojęć](#11-wykaz-ważniejszych-skrótów-i-pojęć)
+- [12. Bibliografia](#12-bibliografia)
+- [13. Spis rysunków](#13-spis-rysunków)
+- [14. Załączniki](#14-załączniki)
+<div style="page-break-after: always;"></div>
+
+
 ## 1. Streszczenie i Abstract
 
 ### 1.1. Streszczenie 
@@ -153,6 +215,15 @@ W tradycyjnym modelu pracy, który system ma zastąpić, proces rezerwacji opier
 
 ### 4.4. Przypadki użycia (Use Case)
 
+<br>
+<figure style="text-align: center;">
+    <img src="./img/uml.png" alt="Diagram przypadków użycia" width="70%">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 4.1.</strong> Diagram przypadków użycia (UML) obrazujący interakcje aktorów z systemem.
+    </figcaption>
+</figure>
+<br>
+
 #### UC1: Złożenie rezerwacji przez Klienta
 * **Aktor główny:** Klient.
 * **Scenariusz:** Klient wchodzi na stronę główną, wypełnia formularz rezerwacji, przechodzi pomyślnie walidację i zatwierdza wybór. System zapisuje dane w bazie i wyświetla komunikat o sukcesie.
@@ -169,6 +240,15 @@ W tradycyjnym modelu pracy, który system ma zastąpić, proces rezerwacji opier
 
 ### 5.1. Architektura systemu
 System został zaprojektowany w oparciu o architekturę trójwarstwową, co zapewnia wysoką separację odpowiedzialności oraz ułatwia przyszłą skalowalność i konserwację oprogramowania.
+
+<br>
+<figure style="text-align: center;">
+    <img src="./img/diagram_5.1.png" alt="Schemat architektury" width="70%">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 5.1.</strong> Schemat architektury trójwarstwowej (Client-Server-Database) zaimplementowanego rozwiązania.
+    </figcaption>
+</figure>
+<br>
 
 * **Warstwa prezentacji (Frontend):** Zaimplementowana jako Single Page Application (SPA). Odpowiada za renderowanie interfejsu, obsługę interakcji z użytkownikiem oraz wstępną walidację danych formularzy. Komunikuje się z warstwą logiki za pomocą asynchronicznych zapytań HTTP (REST API).
 * **Warstwa logiki biznesowej (Backend):** Serwer aplikacji pełniący rolę pośrednika. Realizuje procesy autoryzacji, zaawansowaną walidację (Zod), sanityzację danych oraz zarządza bezpieczeństwem sesji (JWT).
@@ -197,8 +277,7 @@ Projekt interfejsu opiera się na zasadzie minimalizmu i intuicyjności. Nawigac
     * W przypadku sukcesu: Reset licznika prób, wygenerowanie tokenów JWT i wpis do Audit Logs.
     * W przypadku błędu: Inkrementacja licznika prób, ewentualne nałożenie blokady czasowej i wpis o błędnym logowaniu do Audit Logs.
 
-    ## 6. Implementacja rozwiązania
-
+## 6. Implementacja rozwiązania
 ### 6.1. Zastosowane technologie i narzędzia
 
 * **Języki programowania i Frameworki:**
@@ -342,15 +421,72 @@ Proces uruchomienia aplikacji składa się z etapu konfiguracji bazy danych oraz
 
 #### 8.3.1. Rezerwacja stolika (Widok Klienta)
 * **Krok 1:** Wejdź na stronę główną aplikacji.
+
+<br>
+<figure style="text-align: center;">
+    <img src="./img/main.png" alt="Strona główna aplikacji" width="100%" style="border: 1px solid #ddd; border-radius: 5px;">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 8.1.</strong> Strona główna aplikacji umożliwiająca wybór miasta.
+    </figcaption>
+</figure>
+<br>
+
 * **Krok 2:** Wypełnij pola formularza: Imię, adres e-mail, liczbę osób (zakres 1–20) oraz datę i godzinę.
+
+<br>
+<figure style="text-align: center;">
+    <img src="./img/menu.png" alt="Strona główna aplikacji" width="100%" style="border: 1px solid #ddd; border-radius: 5px;">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 8.2.</strong> Aktualne menu wybranej restauracji
+    </figcaption>
+</figure>
+<br>
+
 * **Krok 3:** Kliknij przycisk "Zarezerwuj". W przypadku błędnych danych, system wyświetli czerwony komunikat walidacji. Przy poprawnym zgłoszeniu pojawi się zielony komunikat potwierdzający.
+
+<br>
+<figure style="text-align: center;">
+    <img src="./img/rezerwacja.png" alt="Strona główna aplikacji" width="100%" style="border: 1px solid #ddd; border-radius: 5px;">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 8.3.</strong> Modal z formularzem rezerwacyjnym i walidacją danych.
+    </figcaption>
+</figure>
+<br>
 
 #### 8.3.2. Zarządzanie systemem (Widok Administratora)
 * **Logowanie:** Przejdź do ścieżki `/admin`. Podaj hasło administratora. System chroni to wejście przed atakami typu Brute Force (blokada po 5 próbach).
+
+<br>
+<figure style="text-align: center;">
+    <img src="./img/admin_login.png" alt="Logowanie administratora" width="90%" style="border: 1px solid #ddd; border-radius: 5px;">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 8.4.</strong> Panel logowania administratora chroniony przed atakami Brute Force.
+    </figcaption>
+</figure>
+<br>
+
 * **Przegląd rezerwacji:** Po zalogowaniu zobaczysz tabelę ze wszystkimi zgłoszeniami. Możesz korzystać z wyszukiwarki, aby znaleźć konkretnego klienta po nazwisku lub adresie e-mail.
 * **Usuwanie danych:** Przy każdej rezerwacji znajduje się przycisk "Usuń". Po jego kliknięciu rekord jest permanentnie usuwany z bazy danych PostgreSQL.
+
+<br>
+<figure style="text-align: center;">
+    <img src="./img/active_reser.png" alt="Panel aktywnych rezerwacji" width="100%" style="border: 1px solid #ddd; border-radius: 5px;">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 8.5.</strong> Panel dashboardu wyświetlający listę aktywnych rezerwacji z opcją ich usuwania.
+    </figcaption>
+</figure>
+<br>
+
 * **Audit Logs:** Przejdź do zakładki logów, aby sprawdzić historię logowań. Każdy wpis zawiera informację o sukcesie lub porażce operacji oraz adres IP użytkownika.
 
+<br>
+<figure style="text-align: center;">
+    <img src="./img/monitoring.png" alt="Dziennik zdarzeń" width="100%" style="border: 1px solid #ddd; border-radius: 5px;">
+    <figcaption style="font-size: 0.9em; color: gray; margin-top: 10px;">
+        <strong>Rys. 8.6.</strong> Moduł monitoringu systemu (Audit Logs) rejestrujący zdarzenia bezpieczeństwa.
+    </figcaption>
+</figure>
+<br>
 
 
 #### 8.3.3. Ścieżki nawigacji
@@ -419,3 +555,110 @@ Główny cel pracy, polegający na zaprojektowaniu i implementacji nowoczesnego 
 * **Integracja z AI:** Zastosowanie algorytmów uczenia maszynowego do przewidywania prawdopodobieństwa rezygnacji klienta z rezerwacji na podstawie historycznych danych behawioralnych.
 * **Powiadomienia i przypomnienia:** Wdrożenie automatycznych komunikatów wysyłanych drogą mailową lub SMS na 24 godziny przed planowaną wizytą.
 * **Aplikacja mobilna (PWA):** Przekształcenie obecnego frontendu w progresywną aplikację webową, co umożliwi instalację systemu na smartfonach pracowników i otrzymywanie powiadomień typu *Push* o nowych rezerwacjach.
+
+<div style="page-break-after: always;"></div>
+
+## 11. Wykaz ważniejszych skrótów i pojęć
+
+| Skrót | Rozwinięcie / Definicja |
+| :--- | :--- |
+| **API** | *Application Programming Interface* – interfejs programistyczny aplikacji. |
+| **CRUD** | *Create, Read, Update, Delete* – cztery podstawowe funkcje operacji na danych. |
+| **ERD** | *Entity Relationship Diagram* – diagram związków encji w bazie danych. |
+| **JWT** | *JSON Web Token* – standard bezpiecznego przesyłania informacji w formie obiektu JSON. |
+| **MVC** | *Model-View-Controller* – wzorzec architektoniczny służący do organizacji struktury aplikacji. |
+| **REST** | *Representational State Transfer* – styl architektury oprogramowania oparty na protokole HTTP. |
+| **SPA** | *Single Page Application* – aplikacja internetowa działająca w obrębie jednej strony, dynamicznie doczytująca treść. |
+| **SQL** | *Structured Query Language* – strukturalny język zapytań do baz danych. |
+
+## 12. Bibliografia
+
+1.  Parlament Europejski i Rada (UE). (2016). *Rozporządzenie 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych (RODO)*. Dziennik Urzędowy Unii Europejskiej.
+2.  Meta Open Source. *React – The library for web and native user interfaces*. Dokumentacja techniczna dostępna online: https://react.dev/ [Dostęp: 2026-01-28].
+3.  OpenJS Foundation. *Node.js v18.x Documentation*. Dokumentacja techniczna dostępna online: https://nodejs.org/docs/latest-v18.x/api/ [Dostęp: 2026-01-28].
+4.  The PostgreSQL Global Development Group. *PostgreSQL 14.15 Documentation*. Dokumentacja techniczna dostępna online: https://www.postgresql.org/docs/14/index.html [Dostęp: 2026-01-28].
+5.  Microsoft. *TypeScript Handbook*. Dokumentacja techniczna dostępna online: https://www.typescriptlang.org/docs/ [Dostęp: 2026-01-28].
+6.  OWASP Foundation. *OWASP Top 10:2021*. Raport bezpieczeństwa aplikacji webowych. Dostępny online: https://owasp.org/Top10/ [Dostęp: 2026-01-28].
+7.  MDN Web Docs. *HTTP Cookies and Set-Cookie header*. Mozilla Developer Network. Dostępne online: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies [Dostęp: 2026-01-28].
+8.  Freeman, A. (2020). *Pro React 16*. Apress.
+9.  Simpson, K. (2015). *You Don't Know JS: Async & Performance*. O'Reilly Media.
+
+<div style="page-break-after: always;"></div>
+
+## 13. Spis rysunków
+
+* **Rys. 4.1.** Diagram przypadków użycia (UML) obrazujący interakcje aktorów z systemem.
+* **Rys. 5.1.** Schemat architektury trójwarstwowej (Client-Server-Database).
+* **Rys. 5.2.** Diagram związków encji (ERD) przedstawiający strukturę bazy danych.
+* **Rys. 8.1.** Strona główna aplikacji umożliwiająca wybór miasta.
+* **Rys. 8.2.** Aktualne menu wybranej restauracji
+* **Rys. 8.3.** Modal z formularzem rezerwacyjnym i walidacją danych.
+* **Rys. 8.4.** Panel logowania administratora chroniony przed atakami Brute Force.
+* **Rys. 8.5.** Panel dashboardu wyświetlający listę aktywnych rezerwacji.
+* **Rys. 8.6.** Moduł monitoringu systemu (Audit Logs) rejestrujący zdarzenia.
+
+## 14. Załączniki
+
+**Załącznik 1. Repozytorium kodu źródłowego**
+Pełny kod źródłowy projektu, wraz z historią zmian (commits) oraz dokumentacją wdrożeniową README, znajduje się w publicznym repozytorium w serwisie GitHub:
+* **Link:** [`https://github.com/Hubert8881/projekt-inzynierski-3.0/tree/main`]
+
+**Załącznik 2. Struktura pliku konfiguracyjnego (.env)**
+Wzór zmiennych środowiskowych niezbędnych do uruchomienia serwera (plik `.env.example`). Ze względów bezpieczeństwa, rzeczywiste klucze nie są dołączane do dokumentacji drukowanej.
+
+```text
+# Konfiguracja Serwera
+PORT=5001
+NODE_ENV=development
+
+# Baza Danych (PostgreSQL)
+DB_USER=postgres
+DB_PASSWORD=secret_password
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=restaurant_db
+
+# Bezpieczeństwo (JWT Secrets)
+# Wygenerowane losowe ciągi znaków (minimum 32 znaki)
+JWT_SECRET=twoj_bardzo_dlugi_i_tajny_klucz_access
+JWT_REFRESH_SECRET=twoj_bardzo_dlugi_i_tajny_klucz_refresh
+```
+
+**Załącznik 3. Skrypt inicjalizujący bazę danych (Fragment SQL)**
+Poniżej przedstawiono kluczowe zapytania SQL tworzące strukturę tabel opisaną w rozdziale 5.2. Skrypt ten definiuje relacje oraz ograniczenia (constraints) zapewniające integralność danych.
+
+```sql
+-- 1. Tabela kont administratorów
+CREATE TABLE IF NOT EXISTS admin_account (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    login_attempts INT DEFAULT 0,
+    lock_until TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Tabela rezerwacji (Główna tabela systemu)
+CREATE TABLE IF NOT EXISTS reservations (
+    id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20),
+    party_size INT NOT NULL CHECK (party_size > 0 AND party_size <= 20),
+    reservation_date TIMESTAMP NOT NULL,
+    status VARCHAR(20) DEFAULT 'CONFIRMED', -- np. CONFIRMED, CANCELLED
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Tabela logów bezpieczeństwa (Audit Logs)
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id SERIAL PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL, -- np. 'LOGIN_SUCCESS', 'LOGIN_FAILURE', 'DELETE_RES'
+    ip_address VARCHAR(45),          -- Obsługa IPv4 oraz IPv6
+    details TEXT,                    -- Dodatkowe szczegóły zdarzenia
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Przykładowe indeksy dla optymalizacji wyszukiwania
+CREATE INDEX idx_reservations_date ON reservations(reservation_date);
+CREATE INDEX idx_reservations_email ON reservations(email);
